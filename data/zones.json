@@ -1,0 +1,140 @@
+{
+  "zones": [
+    {
+      "id": "chest_front",
+      "name": "Chest Front",
+      "description": "Front chest area, centered",
+      "component": "body",
+      "uvBounds": {
+        "minU": 0.35,
+        "maxU": 0.65,
+        "minV": 0.45,
+        "maxV": 0.65
+      },
+      "sizeConstraints": {
+        "minWidth": 0.15,
+        "maxWidth": 0.30,
+        "minHeight": 0.15,
+        "maxHeight": 0.30,
+        "aspectRatio": {
+          "min": 0.8,
+          "max": 1.2
+        }
+      },
+      "defaultPosition": {
+        "u": 0.5,
+        "v": 0.55
+      },
+      "rotationLimit": 15
+    },
+    {
+      "id": "back_center",
+      "name": "Back Center",
+      "description": "Center back area",
+      "component": "body",
+      "uvBounds": {
+        "minU": 0.35,
+        "maxU": 0.65,
+        "minV": 0.45,
+        "maxV": 0.65
+      },
+      "sizeConstraints": {
+        "minWidth": 0.15,
+        "maxWidth": 0.30,
+        "minHeight": 0.15,
+        "maxHeight": 0.30,
+        "aspectRatio": {
+          "min": 0.8,
+          "max": 1.2
+        }
+      },
+      "defaultPosition": {
+        "u": 0.5,
+        "v": 0.55
+      },
+      "rotationLimit": 15
+    },
+    {
+      "id": "chest_left",
+      "name": "Chest Left",
+      "description": "Left side of chest",
+      "component": "body",
+      "uvBounds": {
+        "minU": 0.20,
+        "maxU": 0.45,
+        "minV": 0.45,
+        "maxV": 0.65
+      },
+      "sizeConstraints": {
+        "minWidth": 0.10,
+        "maxWidth": 0.25,
+        "minHeight": 0.10,
+        "maxHeight": 0.25,
+        "aspectRatio": {
+          "min": 0.8,
+          "max": 1.2
+        }
+      },
+      "defaultPosition": {
+        "u": 0.325,
+        "v": 0.55
+      },
+      "rotationLimit": 15
+    },
+    {
+      "id": "sleeve_left_upper",
+      "name": "Left Sleeve Upper",
+      "description": "Upper area of left sleeve",
+      "component": "sleeve_left",
+      "uvBounds": {
+        "minU": 0.40,
+        "maxU": 0.60,
+        "minV": 0.20,
+        "maxV": 0.40
+      },
+      "sizeConstraints": {
+        "minWidth": 0.10,
+        "maxWidth": 0.20,
+        "minHeight": 0.10,
+        "maxHeight": 0.20,
+        "aspectRatio": {
+          "min": 0.8,
+          "max": 1.2
+        }
+      },
+      "defaultPosition": {
+        "u": 0.5,
+        "v": 0.30
+      },
+      "rotationLimit": 15
+    },
+    {
+      "id": "sleeve_right_upper",
+      "name": "Right Sleeve Upper",
+      "description": "Upper area of right sleeve",
+      "component": "sleeve_right",
+      "uvBounds": {
+        "minU": 0.40,
+        "maxU": 0.60,
+        "minV": 0.20,
+        "maxV": 0.40
+      },
+      "sizeConstraints": {
+        "minWidth": 0.10,
+        "maxWidth": 0.20,
+        "minHeight": 0.10,
+        "maxHeight": 0.20,
+        "aspectRatio": {
+          "min": 0.8,
+          "max": 1.2
+        }
+      },
+      "defaultPosition": {
+        "u": 0.5,
+        "v": 0.30
+      },
+      "rotationLimit": 15
+    }
+  ]
+}
+

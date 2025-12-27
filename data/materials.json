@@ -1,0 +1,363 @@
+{
+  "materials": [
+    {
+      "id": "cotton-jersey-001",
+      "properties": {
+        "name": "Cotton Jersey",
+        "category": "cotton",
+        "textures": {
+          "albedo": "materials/cotton/jersey/albedo.webp",
+          "normal": "materials/cotton/jersey/normal.webp",
+          "roughness": "materials/cotton/jersey/roughness.webp"
+        },
+        "baseColor": "#ffffff",
+        "roughness": 0.7,
+        "metallic": 0,
+        "priceModifier": 0,
+        "premium": false
+      }
+    },
+    {
+      "id": "cotton-pique-001",
+      "properties": {
+        "name": "Cotton Pique",
+        "category": "cotton",
+        "textures": {
+          "albedo": "materials/cotton/pique/albedo.webp",
+          "normal": "materials/cotton/pique/normal.webp",
+          "roughness": "materials/cotton/pique/roughness.webp"
+        },
+        "baseColor": "#ffffff",
+        "roughness": 0.6,
+        "metallic": 0,
+        "priceModifier": 5,
+        "premium": false
+      }
+    },
+    {
+      "id": "denim-light-001",
+      "properties": {
+        "name": "Light Denim",
+        "category": "denim",
+        "textures": {
+          "albedo": "materials/denim/light/albedo.webp",
+          "normal": "materials/denim/light/normal.webp",
+          "roughness": "materials/denim/light/roughness.webp"
+        },
+        "baseColor": "#6b8cae",
+        "roughness": 0.8,
+        "metallic": 0,
+        "priceModifier": 10,
+        "premium": false
+      }
+    },
+    {
+      "id": "denim-medium-001",
+      "properties": {
+        "name": "Medium Denim",
+        "category": "denim",
+        "textures": {
+          "albedo": "materials/denim/medium/albedo.webp",
+          "normal": "materials/denim/medium/normal.webp",
+          "roughness": "materials/denim/medium/roughness.webp"
+        },
+        "baseColor": "#4a6fa5",
+        "roughness": 0.8,
+        "metallic": 0,
+        "priceModifier": 10,
+        "premium": false
+      }
+    },
+    {
+      "id": "denim-dark-001",
+      "properties": {
+        "name": "Dark Denim",
+        "category": "denim",
+        "textures": {
+          "albedo": "materials/denim/dark/albedo.webp",
+          "normal": "materials/denim/dark/normal.webp",
+          "roughness": "materials/denim/dark/roughness.webp"
+        },
+        "baseColor": "#2c3e50",
+        "roughness": 0.8,
+        "metallic": 0,
+        "priceModifier": 10,
+        "premium": false
+      }
+    },
+    {
+      "id": "linen-001",
+      "properties": {
+        "name": "Linen",
+        "category": "linen",
+        "textures": {
+          "albedo": "materials/linen/albedo.webp",
+          "normal": "materials/linen/normal.webp",
+          "roughness": "materials/linen/roughness.webp"
+        },
+        "baseColor": "#f5f5dc",
+        "roughness": 0.9,
+        "metallic": 0,
+        "priceModifier": 15,
+        "premium": true
+      }
+    },
+    {
+      "id": "silk-001",
+      "properties": {
+        "name": "Silk",
+        "category": "silk",
+        "textures": {
+          "albedo": "materials/silk/albedo.webp",
+          "normal": "materials/silk/normal.webp",
+          "roughness": "materials/silk/roughness.webp"
+        },
+        "baseColor": "#ffffff",
+        "roughness": 0.2,
+        "metallic": 0.1,
+        "priceModifier": 25,
+        "premium": true
+      }
+    },
+    {
+      "id": "polyester-001",
+      "properties": {
+        "name": "Polyester Blend",
+        "category": "polyester",
+        "textures": {
+          "albedo": "materials/polyester/albedo.webp",
+          "normal": "materials/polyester/normal.webp",
+          "roughness": "materials/polyester/roughness.webp"
+        },
+        "baseColor": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "priceModifier": 0,
+        "premium": false
+      }
+    },
+    {
+      "id": "flannel-001",
+      "properties": {
+        "name": "Flannel",
+        "category": "blend",
+        "textures": {
+          "albedo": "materials/flannel/albedo.webp",
+          "normal": "materials/flannel/normal.webp",
+          "roughness": "materials/flannel/roughness.webp"
+        },
+        "baseColor": "#d4a574",
+        "roughness": 0.85,
+        "metallic": 0,
+        "priceModifier": 12,
+        "premium": false
+      }
+    },
+    {
+      "id": "oxford-001",
+      "properties": {
+        "name": "Oxford Cloth",
+        "category": "cotton",
+        "textures": {
+          "albedo": "materials/oxford/albedo.webp",
+          "normal": "materials/oxford/normal.webp",
+          "roughness": "materials/oxford/roughness.webp"
+        },
+        "baseColor": "#ffffff",
+        "roughness": 0.65,
+        "metallic": 0,
+        "priceModifier": 8,
+        "premium": false
+      }
+    },
+    {
+      "id": "wool-merino-001",
+      "properties": {
+        "name": "Merino Wool",
+        "category": "wool",
+        "textures": {
+          "albedo": "materials/wool/merino/albedo.webp",
+          "normal": "materials/wool/merino/normal.webp",
+          "roughness": "materials/wool/merino/roughness.webp"
+        },
+        "baseColor": "#f5f5f0",
+        "roughness": 0.75,
+        "metallic": 0,
+        "priceModifier": 20,
+        "premium": true
+      }
+    },
+    {
+      "id": "wool-cashmere-001",
+      "properties": {
+        "name": "Cashmere",
+        "category": "wool",
+        "textures": {
+          "albedo": "materials/wool/cashmere/albedo.webp",
+          "normal": "materials/wool/cashmere/normal.webp",
+          "roughness": "materials/wool/cashmere/roughness.webp"
+        },
+        "baseColor": "#fafafa",
+        "roughness": 0.6,
+        "metallic": 0,
+        "priceModifier": 35,
+        "premium": true
+      }
+    },
+    {
+      "id": "leather-genuine-001",
+      "properties": {
+        "name": "Genuine Leather",
+        "category": "leather",
+        "textures": {
+          "albedo": "materials/leather/genuine/albedo.webp",
+          "normal": "materials/leather/genuine/normal.webp",
+          "roughness": "materials/leather/genuine/roughness.webp",
+          "metallic": "materials/leather/genuine/metallic.webp"
+        },
+        "baseColor": "#3d2817",
+        "roughness": 0.7,
+        "metallic": 0.1,
+        "priceModifier": 40,
+        "premium": true
+      }
+    },
+    {
+      "id": "leather-suede-001",
+      "properties": {
+        "name": "Suede",
+        "category": "leather",
+        "textures": {
+          "albedo": "materials/leather/suede/albedo.webp",
+          "normal": "materials/leather/suede/normal.webp",
+          "roughness": "materials/leather/suede/roughness.webp"
+        },
+        "baseColor": "#8b7355",
+        "roughness": 0.95,
+        "metallic": 0,
+        "priceModifier": 45,
+        "premium": true
+      }
+    },
+    {
+      "id": "satin-001",
+      "properties": {
+        "name": "Satin",
+        "category": "satin",
+        "textures": {
+          "albedo": "materials/satin/albedo.webp",
+          "normal": "materials/satin/normal.webp",
+          "roughness": "materials/satin/roughness.webp"
+        },
+        "baseColor": "#ffffff",
+        "roughness": 0.15,
+        "metallic": 0.05,
+        "priceModifier": 30,
+        "premium": true
+      }
+    },
+    {
+      "id": "velvet-001",
+      "properties": {
+        "name": "Velvet",
+        "category": "velvet",
+        "textures": {
+          "albedo": "materials/velvet/albedo.webp",
+          "normal": "materials/velvet/normal.webp",
+          "roughness": "materials/velvet/roughness.webp"
+        },
+        "baseColor": "#1a1a1a",
+        "roughness": 0.3,
+        "metallic": 0,
+        "priceModifier": 35,
+        "premium": true
+      }
+    },
+    {
+      "id": "mesh-athletic-001",
+      "properties": {
+        "name": "Athletic Mesh",
+        "category": "mesh",
+        "textures": {
+          "albedo": "materials/mesh/athletic/albedo.webp",
+          "normal": "materials/mesh/athletic/normal.webp",
+          "roughness": "materials/mesh/athletic/roughness.webp"
+        },
+        "baseColor": "#ffffff",
+        "roughness": 0.4,
+        "metallic": 0,
+        "priceModifier": 8,
+        "premium": false
+      }
+    },
+    {
+      "id": "technical-dryfit-001",
+      "properties": {
+        "name": "Dri-FIT Technical",
+        "category": "technical",
+        "textures": {
+          "albedo": "materials/technical/dryfit/albedo.webp",
+          "normal": "materials/technical/dryfit/normal.webp",
+          "roughness": "materials/technical/dryfit/roughness.webp"
+        },
+        "baseColor": "#ffffff",
+        "roughness": 0.3,
+        "metallic": 0,
+        "priceModifier": 15,
+        "premium": false
+      }
+    },
+    {
+      "id": "technical-thermo-001",
+      "properties": {
+        "name": "Thermal Tech",
+        "category": "technical",
+        "textures": {
+          "albedo": "materials/technical/thermal/albedo.webp",
+          "normal": "materials/technical/thermal/normal.webp",
+          "roughness": "materials/technical/thermal/roughness.webp"
+        },
+        "baseColor": "#2c2c2c",
+        "roughness": 0.5,
+        "metallic": 0,
+        "priceModifier": 18,
+        "premium": false
+      }
+    },
+    {
+      "id": "chambray-001",
+      "properties": {
+        "name": "Chambray",
+        "category": "cotton",
+        "textures": {
+          "albedo": "materials/cotton/chambray/albedo.webp",
+          "normal": "materials/cotton/chambray/normal.webp",
+          "roughness": "materials/cotton/chambray/roughness.webp"
+        },
+        "baseColor": "#6b8cae",
+        "roughness": 0.7,
+        "metallic": 0,
+        "priceModifier": 10,
+        "premium": false
+      }
+    },
+    {
+      "id": "bamboo-001",
+      "properties": {
+        "name": "Bamboo Fiber",
+        "category": "blend",
+        "textures": {
+          "albedo": "materials/bamboo/albedo.webp",
+          "normal": "materials/bamboo/normal.webp",
+          "roughness": "materials/bamboo/roughness.webp"
+        },
+        "baseColor": "#f0f0e8",
+        "roughness": 0.65,
+        "metallic": 0,
+        "priceModifier": 12,
+        "premium": false
+      }
+    }
+  ]
+}
+

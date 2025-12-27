@@ -1,0 +1,369 @@
+{
+  "patterns": [
+    {
+      "id": "stripes-horizontal-001",
+      "properties": {
+        "name": "Horizontal Stripes",
+        "category": "stripes",
+        "textures": {
+          "diffuse": "patterns/stripes/horizontal.webp"
+        },
+        "defaultIntensity": 0.7,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 5
+      }
+    },
+    {
+      "id": "stripes-vertical-001",
+      "properties": {
+        "name": "Vertical Stripes",
+        "category": "stripes",
+        "textures": {
+          "diffuse": "patterns/stripes/vertical.webp"
+        },
+        "defaultIntensity": 0.7,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 5
+      }
+    },
+    {
+      "id": "stripes-diagonal-001",
+      "properties": {
+        "name": "Diagonal Stripes",
+        "category": "stripes",
+        "textures": {
+          "diffuse": "patterns/stripes/diagonal.webp"
+        },
+        "defaultIntensity": 0.7,
+        "defaultScale": 1.0,
+        "defaultRotation": 45,
+        "priceModifier": 5
+      }
+    },
+    {
+      "id": "checks-gingham-001",
+      "properties": {
+        "name": "Gingham Check",
+        "category": "checks",
+        "textures": {
+          "diffuse": "patterns/checks/gingham.webp"
+        },
+        "defaultIntensity": 0.8,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 8
+      }
+    },
+    {
+      "id": "checks-plaid-001",
+      "properties": {
+        "name": "Plaid",
+        "category": "checks",
+        "textures": {
+          "diffuse": "patterns/checks/plaid.webp"
+        },
+        "defaultIntensity": 0.8,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 10
+      }
+    },
+    {
+      "id": "checks-tartan-001",
+      "properties": {
+        "name": "Tartan",
+        "category": "checks",
+        "textures": {
+          "diffuse": "patterns/checks/tartan.webp"
+        },
+        "defaultIntensity": 0.8,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 12
+      }
+    },
+    {
+      "id": "dots-polka-small-001",
+      "properties": {
+        "name": "Small Polka Dots",
+        "category": "dots",
+        "textures": {
+          "diffuse": "patterns/dots/polka-small.webp"
+        },
+        "defaultIntensity": 0.7,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 6
+      }
+    },
+    {
+      "id": "dots-polka-large-001",
+      "properties": {
+        "name": "Large Polka Dots",
+        "category": "dots",
+        "textures": {
+          "diffuse": "patterns/dots/polka-large.webp"
+        },
+        "defaultIntensity": 0.7,
+        "defaultScale": 0.8,
+        "defaultRotation": 0,
+        "priceModifier": 6
+      }
+    },
+    {
+      "id": "geometric-triangles-001",
+      "properties": {
+        "name": "Triangles",
+        "category": "geometric",
+        "textures": {
+          "diffuse": "patterns/geometric/triangles.webp"
+        },
+        "defaultIntensity": 0.7,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 8
+      }
+    },
+    {
+      "id": "geometric-hexagons-001",
+      "properties": {
+        "name": "Hexagons",
+        "category": "geometric",
+        "textures": {
+          "diffuse": "patterns/geometric/hexagons.webp"
+        },
+        "defaultIntensity": 0.7,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 8
+      }
+    },
+    {
+      "id": "abstract-waves-001",
+      "properties": {
+        "name": "Waves",
+        "category": "abstract",
+        "textures": {
+          "diffuse": "patterns/abstract/waves.webp"
+        },
+        "defaultIntensity": 0.6,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 10
+      }
+    },
+    {
+      "id": "abstract-marbled-001",
+      "properties": {
+        "name": "Marbled",
+        "category": "abstract",
+        "textures": {
+          "diffuse": "patterns/abstract/marbled.webp"
+        },
+        "defaultIntensity": 0.6,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 12
+      }
+    },
+    {
+      "id": "floral-roses-001",
+      "properties": {
+        "name": "Rose Pattern",
+        "category": "floral",
+        "textures": {
+          "diffuse": "patterns/floral/roses.webp"
+        },
+        "defaultIntensity": 0.8,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 15
+      }
+    },
+    {
+      "id": "floral-botanical-001",
+      "properties": {
+        "name": "Botanical",
+        "category": "floral",
+        "textures": {
+          "diffuse": "patterns/floral/botanical.webp"
+        },
+        "defaultIntensity": 0.75,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 18
+      }
+    },
+    {
+      "id": "floral-tropical-001",
+      "properties": {
+        "name": "Tropical Leaves",
+        "category": "floral",
+        "textures": {
+          "diffuse": "patterns/floral/tropical.webp"
+        },
+        "defaultIntensity": 0.7,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 15
+      }
+    },
+    {
+      "id": "geometric-circles-001",
+      "properties": {
+        "name": "Circles",
+        "category": "geometric",
+        "textures": {
+          "diffuse": "patterns/geometric/circles.webp"
+        },
+        "defaultIntensity": 0.7,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 8
+      }
+    },
+    {
+      "id": "geometric-squares-001",
+      "properties": {
+        "name": "Squares",
+        "category": "geometric",
+        "textures": {
+          "diffuse": "patterns/geometric/squares.webp"
+        },
+        "defaultIntensity": 0.7,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 8
+      }
+    },
+    {
+      "id": "geometric-diamonds-001",
+      "properties": {
+        "name": "Diamonds",
+        "category": "geometric",
+        "textures": {
+          "diffuse": "patterns/geometric/diamonds.webp"
+        },
+        "defaultIntensity": 0.7,
+        "defaultScale": 1.0,
+        "defaultRotation": 45,
+        "priceModifier": 8
+      }
+    },
+    {
+      "id": "abstract-watercolor-001",
+      "properties": {
+        "name": "Watercolor",
+        "category": "abstract",
+        "textures": {
+          "diffuse": "patterns/abstract/watercolor.webp"
+        },
+        "defaultIntensity": 0.6,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 12
+      }
+    },
+    {
+      "id": "abstract-tie-dye-001",
+      "properties": {
+        "name": "Tie-Dye",
+        "category": "abstract",
+        "textures": {
+          "diffuse": "patterns/abstract/tie-dye.webp"
+        },
+        "defaultIntensity": 0.8,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 10
+      }
+    },
+    {
+      "id": "abstract-gradient-001",
+      "properties": {
+        "name": "Gradient",
+        "category": "abstract",
+        "textures": {
+          "diffuse": "patterns/abstract/gradient.webp"
+        },
+        "defaultIntensity": 0.7,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 10
+      }
+    },
+    {
+      "id": "stripes-thin-001",
+      "properties": {
+        "name": "Thin Stripes",
+        "category": "stripes",
+        "textures": {
+          "diffuse": "patterns/stripes/thin.webp"
+        },
+        "defaultIntensity": 0.7,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 5
+      }
+    },
+    {
+      "id": "stripes-thick-001",
+      "properties": {
+        "name": "Thick Stripes",
+        "category": "stripes",
+        "textures": {
+          "diffuse": "patterns/stripes/thick.webp"
+        },
+        "defaultIntensity": 0.7,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 5
+      }
+    },
+    {
+      "id": "checks-buffalo-001",
+      "properties": {
+        "name": "Buffalo Check",
+        "category": "checks",
+        "textures": {
+          "diffuse": "patterns/checks/buffalo.webp"
+        },
+        "defaultIntensity": 0.8,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 10
+      }
+    },
+    {
+      "id": "dots-houndstooth-001",
+      "properties": {
+        "name": "Houndstooth",
+        "category": "dots",
+        "textures": {
+          "diffuse": "patterns/dots/houndstooth.webp"
+        },
+        "defaultIntensity": 0.8,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 12
+      }
+    },
+    {
+      "id": "dots-paisley-001",
+      "properties": {
+        "name": "Paisley",
+        "category": "dots",
+        "textures": {
+          "diffuse": "patterns/dots/paisley.webp"
+        },
+        "defaultIntensity": 0.75,
+        "defaultScale": 1.0,
+        "defaultRotation": 0,
+        "priceModifier": 15
+      }
+    }
+  ]
+}
+
