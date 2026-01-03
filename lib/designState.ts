@@ -11,7 +11,7 @@ export interface DesignState {
   materialMap: Record<ComponentType, string | null>;
   colorMap: Record<ComponentType, string | null>;
   patternMap: Record<ComponentType, PatternApplication | null>;
-  printMap: Record<ComponentType, PrintApplication | null>;
+  printMap: Record<ComponentType, PrintApplication[]>; // Changed to array to match store
   selectedComponent: ComponentType | null;
   timestamp: number;
 }
@@ -67,7 +67,7 @@ export function createDesignStateSnapshot(state: {
   materialMap: Record<ComponentType, string | null>;
   colorMap: Record<ComponentType, string | null>;
   patternMap: Record<ComponentType, PatternApplication | null>;
-  printMap: Record<ComponentType, PrintApplication | null>;
+  printMap: Record<ComponentType, PrintApplication[]>; // Changed to array to match store
   selectedComponent: ComponentType | null;
 }): DesignState {
   return {

@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { ComponentType, ComponentMap } from '@/types/models';
 import { PatternApplication } from '@/types/patterns';
-import { PrintApplication } from '@/types/prints';
+import { PrintApplication, BlendMode } from '@/types/prints';
 import { DesignState, createDesignStateSnapshot, areDesignStatesEqual } from '@/lib/designState';
 
 type Mode = 'blank' | 'branded';
@@ -91,20 +91,21 @@ export const useConfiguratorStore = create<ConfiguratorState>()(
         set((state) => {
           const existingPrints = state.printMap[component] || [];
           // Assign zIndex if not provided (highest existing + 1)
-          if (print.zIndex === undefined) {
-            const maxZIndex = existingPrints.length > 0
-              ? Math.max(...existingPrints.map(p => p.zIndex || 0))
-              : 0;
-            print.zIndex = maxZIndex + 1;
-          }
-          // Ensure blendMode is set
-          if (!print.blendMode) {
-            print.blendMode = BlendMode.NORMAL;
-          }
+          const zIndex = print.zIndex !== undefined 
+            ? print.zIndex 
+            : (existingPrints.length > 0
+                ? Math.max(...existingPrints.map(p => p.zIndex || 0)) + 1
+                : 0);
+          // Ensure blendMode is set (create new object)
+          const printWithDefaults: PrintApplication = {
+            ...print,
+            zIndex,
+            blendMode: print.blendMode || BlendMode.NORMAL,
+          };
           return {
             printMap: {
               ...state.printMap,
-              [component]: [...existingPrints, print],
+              [component]: [...existingPrints, printWithDefaults],
             },
           };
         });

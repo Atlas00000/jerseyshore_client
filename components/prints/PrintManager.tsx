@@ -1,5 +1,10 @@
 'use client';
 
+/**
+ * PrintManager Component
+ * List/card view toggle, print item cards with previews, edit/delete actions, and layer ordering
+ */
+
 import { useState } from 'react';
 import { useConfiguratorStore } from '@/stores/configuratorStore';
 import { PrintApplication } from '@/types/prints';
@@ -7,6 +12,14 @@ import { ComponentType } from '@/types/models';
 import { PrintEditor } from './PrintEditor';
 import { printLibraryStorage } from '@/lib/printLibraryStorage';
 import { logger } from '@/lib/logger';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { MotionDiv, AnimatePresence } from '@/lib/animations/framerMotion';
+import { HoverScale } from '@/lib/animations/framerMotion';
+import { ModalPanel, PanelHeader, PanelBody } from '@/components/ui/Panel';
+
+type ViewMode = 'list' | 'card';
 
 export function PrintManager() {
   const { printMap, updatePrint, removePrint, setPrintOrder, clearAllPrints, selectedComponent, setComponent } = useConfiguratorStore();
@@ -14,6 +27,7 @@ export function PrintManager() {
     component: ComponentType;
     print: PrintApplication;
   } | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('card');
 
   // Get all prints across all components, sorted by zIndex
   const allPrints = Object.entries(printMap)
@@ -27,7 +41,7 @@ export function PrintManager() {
 
   const handleEdit = (component: ComponentType, print: PrintApplication) => {
     setEditingPrint({ component, print });
-    setComponent(component); // Select the component when editing
+    setComponent(component);
     logger.info('Editing print', {
       context: 'PrintManager',
       metadata: { component, printId: print.id },
@@ -114,151 +128,374 @@ export function PrintManager() {
 
   if (allPrints.length === 0) {
     return (
-      <div className="p-4 bg-gray-50 rounded-lg">
-        <p className="text-sm text-gray-500">No prints placed yet.</p>
-      </div>
+      <Card variant="standard">
+        <div className="p-6 text-center">
+          <svg
+            className="w-12 h-12 mx-auto text-text-tertiary mb-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <p className="text-small text-text-secondary">No prints placed yet</p>
+          <p className="text-tiny text-text-tertiary mt-1">
+            Upload an image or add text to get started
+          </p>
+        </div>
+      </Card>
     );
   }
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-sm">
-      <h3 className="text-lg font-semibold mb-4">Print Management</h3>
-
-      {/* Print Editor */}
-      {editingPrint && (
-        <div className="mb-4">
-          <PrintEditor
-            print={editingPrint.print}
-            onUpdate={(updated) => handleUpdate(editingPrint.component, updated)}
-            onDelete={() => handleDelete(editingPrint.component)}
-            onClose={handleCloseEditor}
+    <div className="space-y-4">
+      {/* Header with View Toggle */}
+      <div className="flex items-center justify-between">
+        <h3 className="text-h4 font-bold text-text-primary">
+          Print Management
+        </h3>
+        <div className="flex items-center gap-2">
+          <Button
+            variant={viewMode === 'list' ? 'primary' : 'ghost'}
+            size="sm"
+            onClick={() => setViewMode('list')}
+            icon={
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            }
+          />
+          <Button
+            variant={viewMode === 'card' ? 'primary' : 'ghost'}
+            size="sm"
+            onClick={() => setViewMode('card')}
+            icon={
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
+              </svg>
+            }
           />
         </div>
-      )}
+      </div>
 
-      {/* Print List */}
-      <div className="space-y-2">
-        <h4 className="text-sm font-medium text-gray-700 mb-2">
-          Placed Prints ({allPrints.length})
-        </h4>
+      {/* Print Count */}
+      <div className="flex items-center gap-2">
+        <Badge variant="info" size="md">
+          {allPrints.length}
+        </Badge>
+        <span className="text-small text-text-secondary">
+          print{allPrints.length > 1 ? 's' : ''} placed
+        </span>
+      </div>
+
+      {/* Print Editor Modal */}
+      <AnimatePresence>
+        {editingPrint && (
+          <ModalPanel
+            isOpen={!!editingPrint}
+            onClose={handleCloseEditor}
+            showBackdrop
+          >
+            <PanelHeader onClose={handleCloseEditor}>
+              <h3 className="text-h4 font-bold text-text-primary">Edit Print</h3>
+            </PanelHeader>
+            <PanelBody>
+              <PrintEditor
+                print={editingPrint.print}
+                onUpdate={(updated) => handleUpdate(editingPrint.component, updated)}
+                onDelete={() => handleDelete(editingPrint.component, editingPrint.print.id)}
+                onClose={handleCloseEditor}
+              />
+            </PanelBody>
+          </ModalPanel>
+        )}
+      </AnimatePresence>
+
+      {/* Print List/Cards */}
+      <div className={viewMode === 'card' ? 'grid grid-cols-1 gap-3' : 'space-y-2'}>
         {allPrints.map(({ component, print }, index) => {
           const printsForComponent = printMap[component] || [];
           const printIndex = printsForComponent.findIndex((p) => p.id === print.id);
           const canMoveUp = printIndex > 0;
           const canMoveDown = printIndex < printsForComponent.length - 1;
+          const isEditing = editingPrint?.component === component && editingPrint?.print.id === print.id;
 
+          if (viewMode === 'card') {
+            return (
+              <MotionDiv
+                key={`${component}-${print.id}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <Card
+                  variant={isEditing ? 'elevated' : 'standard'}
+                  hover
+                  className={`
+                    cursor-pointer transition-smooth
+                    ${isEditing ? 'border-accent-blue shadow-glow-primary' : ''}
+                  `}
+                  onClick={() => handleEdit(component, print)}
+                >
+                  <div className="flex items-start gap-4">
+                    {/* Preview Thumbnail */}
+                    {print.customImageUrl && (
+                      <div className="flex-shrink-0">
+                        <div className="w-20 h-20 rounded-medium overflow-hidden border-2 border-base-light-gray bg-base-light-gray">
+                          <img
+                            src={print.customImageUrl}
+                            alt="Print preview"
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Print Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Badge variant="primary" size="sm">
+                              {component.replace('_', ' ')}
+                            </Badge>
+                            {print.zoneId && (
+                              <Badge variant="neutral" size="sm">
+                                {print.zoneId}
+                              </Badge>
+                            )}
+                            {print.textContent && (
+                              <Badge variant="info" size="sm">
+                                Text
+                              </Badge>
+                            )}
+                            <Badge variant="secondary" size="sm">
+                              Layer {print.zIndex !== undefined ? print.zIndex + 1 : index + 1}
+                            </Badge>
+                          </div>
+                          {print.textContent && (
+                            <p className="text-small font-medium text-text-primary truncate">
+                              "{print.textContent}"
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Print Details */}
+                      <div className="flex flex-wrap items-center gap-2 text-tiny text-text-secondary">
+                        {!print.textContent && (
+                          <>
+                            <span>Scale: {(print.scale * 100).toFixed(0)}%</span>
+                            <span>•</span>
+                            <span>Rotation: {print.rotation.toFixed(0)}°</span>
+                            <span>•</span>
+                          </>
+                        )}
+                        <span>Opacity: {(print.opacity * 100).toFixed(0)}%</span>
+                        <span>•</span>
+                        <span className="capitalize">{print.blendMode || 'normal'}</span>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      {/* Layer Controls */}
+                      <div className="flex flex-col gap-0.5 mr-2">
+                        <HoverScale scale={1.2}>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMoveUp(component, print.id);
+                            }}
+                            disabled={!canMoveUp}
+                            className="p-1 text-text-tertiary hover:text-accent-blue disabled:opacity-30 disabled:cursor-not-allowed transition-smooth rounded-small"
+                            title="Move up (bring forward)"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                            </svg>
+                          </button>
+                        </HoverScale>
+                        <HoverScale scale={1.2}>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMoveDown(component, print.id);
+                            }}
+                            disabled={!canMoveDown}
+                            className="p-1 text-text-tertiary hover:text-accent-blue disabled:opacity-30 disabled:cursor-not-allowed transition-smooth rounded-small"
+                            title="Move down (send backward)"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                        </HoverScale>
+                      </div>
+
+                      {/* Save to Library */}
+                      <HoverScale scale={1.1}>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSaveToLibrary(component, print);
+                          }}
+                          className="p-1.5 text-accent-blue hover:bg-accent-blue/10 rounded-medium transition-smooth"
+                          title="Save to library"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                          </svg>
+                        </button>
+                      </HoverScale>
+
+                      {/* Delete */}
+                      <HoverScale scale={1.1}>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(component, print.id);
+                          }}
+                          className="p-1.5 text-error hover:bg-error-bg rounded-medium transition-smooth"
+                          title="Delete print"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </HoverScale>
+                    </div>
+                  </div>
+                </Card>
+              </MotionDiv>
+            );
+          }
+
+          // List view
           return (
-            <div
+            <MotionDiv
               key={`${component}-${print.id}`}
-              className={`
-                p-3 rounded-lg border-2 transition-all cursor-pointer
-                ${
-                  editingPrint?.component === component && editingPrint?.print.id === print.id
-                    ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
-                }
-              `}
-              onClick={() => handleEdit(component, print)}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.05 }}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-900 capitalize">
-                      {component.replace('_', ' ')}
-                    </span>
-                    {print.zoneId && (
-                      <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded">
-                        {print.zoneId}
-                      </span>
-                    )}
-                    {print.textContent && (
-                      <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-600 rounded">
-                        Text
-                      </span>
-                    )}
-                    <span className="text-xs text-gray-400">
-                      Layer {print.zIndex !== undefined ? print.zIndex + 1 : index + 1}
-                    </span>
-                  </div>
-                  <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
-                    {print.textContent ? (
-                      <span className="font-medium">{print.textContent}</span>
-                    ) : (
-                      <>
-                        <span>Scale: {(print.scale * 100).toFixed(0)}%</span>
-                        <span>Rotation: {print.rotation.toFixed(0)}°</span>
-                      </>
-                    )}
-                    <span>Opacity: {(print.opacity * 100).toFixed(0)}%</span>
-                    <span className="capitalize">{print.blendMode || 'normal'}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1">
-                  {/* Layer order controls */}
-                  <div className="flex flex-col gap-0.5 mr-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleMoveUp(component, print.id);
-                      }}
-                      disabled={!canMoveUp}
-                      className="text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed text-xs"
-                      title="Move up (bring forward)"
-                    >
-                      ↑
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleMoveDown(component, print.id);
-                      }}
-                      disabled={!canMoveDown}
-                      className="text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed text-xs"
-                      title="Move down (send backward)"
-                    >
-                      ↓
-                    </button>
-                  </div>
+              <Card
+                variant={isEditing ? 'elevated' : 'standard'}
+                hover
+                className={`
+                  cursor-pointer transition-smooth
+                  ${isEditing ? 'border-accent-blue shadow-glow-primary' : ''}
+                `}
+                onClick={() => handleEdit(component, print)}
+              >
+                <div className="flex items-center gap-4">
                   {print.customImageUrl && (
-                    <img
-                      src={print.customImageUrl}
-                      alt="Print preview"
-                      className="w-12 h-12 object-cover rounded border border-gray-200"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
+                    <div className="w-16 h-16 rounded-medium overflow-hidden border-2 border-base-light-gray bg-base-light-gray flex-shrink-0">
+                      <img
+                        src={print.customImageUrl}
+                        alt="Print preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    </div>
                   )}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSaveToLibrary(component, print);
-                    }}
-                    className="text-blue-500 hover:text-blue-700 transition-colors p-1"
-                    title="Save to library"
-                  >
-                    💾
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(component, print.id);
-                    }}
-                    className="text-red-500 hover:text-red-700 transition-colors p-1"
-                    title="Delete print"
-                  >
-                    ✕
-                  </button>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge variant="primary" size="sm">
+                        {component.replace('_', ' ')}
+                      </Badge>
+                      {print.zoneId && <Badge variant="neutral" size="sm">{print.zoneId}</Badge>}
+                      {print.textContent && <Badge variant="info" size="sm">Text</Badge>}
+                      <Badge variant="secondary" size="sm">
+                        Layer {print.zIndex !== undefined ? print.zIndex + 1 : index + 1}
+                      </Badge>
+                    </div>
+                    {print.textContent ? (
+                      <p className="text-small font-medium text-text-primary truncate">
+                        "{print.textContent}"
+                      </p>
+                    ) : (
+                      <div className="flex items-center gap-2 text-tiny text-text-secondary">
+                        <span>Scale: {(print.scale * 100).toFixed(0)}%</span>
+                        <span>•</span>
+                        <span>Rotation: {print.rotation.toFixed(0)}°</span>
+                        <span>•</span>
+                        <span>Opacity: {(print.opacity * 100).toFixed(0)}%</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <div className="flex flex-col gap-0.5 mr-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMoveUp(component, print.id);
+                        }}
+                        disabled={!canMoveUp}
+                        className="p-1 text-text-tertiary hover:text-accent-blue disabled:opacity-30"
+                        title="Move up"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMoveDown(component, print.id);
+                        }}
+                        disabled={!canMoveDown}
+                        className="p-1 text-text-tertiary hover:text-accent-blue disabled:opacity-30"
+                        title="Move down"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSaveToLibrary(component, print);
+                      }}
+                      className="p-1.5 text-accent-blue hover:bg-accent-blue/10 rounded-medium"
+                      title="Save to library"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(component, print.id);
+                      }}
+                      className="p-1.5 text-error hover:bg-error-bg rounded-medium"
+                      title="Delete"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </Card>
+            </MotionDiv>
           );
         })}
       </div>
 
+      {/* Clear All Button */}
       {allPrints.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <button
+        <Card variant="standard" className="p-4">
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => {
               clearAllPrints();
               setEditingPrint(null);
@@ -266,13 +503,18 @@ export function PrintManager() {
                 context: 'PrintManager',
               });
             }}
-            className="w-full px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium"
+            fullWidth
+            className="text-error hover:bg-error-bg"
+            icon={
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            }
           >
             Clear All Prints
-          </button>
-        </div>
+          </Button>
+        </Card>
       )}
     </div>
   );
 }
-

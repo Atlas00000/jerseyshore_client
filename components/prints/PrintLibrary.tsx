@@ -1,9 +1,21 @@
 'use client';
 
+/**
+ * PrintLibrary Component
+ * Grid layout with cards, search and filter UI, category tags, and thumbnail previews with hover effects
+ */
+
 import { useState, useEffect, useMemo } from 'react';
 import { PrintLibraryEntry } from '@/types/prints';
 import { printLibraryStorage } from '@/lib/printLibraryStorage';
 import { logger } from '@/lib/logger';
+import { Card } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { Spinner } from '@/components/ui/Loading';
+import { MotionDiv, AnimatePresence } from '@/lib/animations/framerMotion';
+import { HoverScale } from '@/lib/animations/framerMotion';
 
 interface PrintLibraryProps {
   onSelectPrint?: (entry: PrintLibraryEntry) => void;
@@ -45,12 +57,10 @@ export function PrintLibrary({ onSelectPrint }: PrintLibraryProps) {
   const filteredEntries = useMemo(() => {
     let results = entries;
 
-    // Apply search
     if (searchQuery.trim()) {
       results = printLibraryStorage.search(searchQuery);
     }
 
-    // Apply category filter
     if (selectedCategory !== 'all') {
       results = results.filter((entry) => entry.category === selectedCategory);
     }
@@ -58,7 +68,8 @@ export function PrintLibrary({ onSelectPrint }: PrintLibraryProps) {
     return results;
   }, [entries, searchQuery, selectedCategory]);
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (confirm('Are you sure you want to delete this print from your library?')) {
       printLibraryStorage.delete(id);
       loadEntries();
@@ -77,129 +88,193 @@ export function PrintLibrary({ onSelectPrint }: PrintLibraryProps) {
 
   if (isLoading) {
     return (
-      <div className="p-4 bg-gray-50 rounded-lg">
-        <p className="text-sm text-gray-500">Loading print library...</p>
-      </div>
+      <Card variant="standard">
+        <div className="p-8 text-center">
+          <Spinner size="lg" />
+          <p className="text-small text-text-secondary mt-4">Loading print library...</p>
+        </div>
+      </Card>
     );
   }
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-sm">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">Print Library</h3>
-        <span className="text-sm text-gray-500">
-          {entries.length} saved print{entries.length !== 1 ? 's' : ''}
-        </span>
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h3 className="text-h4 font-bold text-text-primary">Print Library</h3>
+        <Badge variant="info" size="md">
+          {entries.length}
+        </Badge>
       </div>
 
       {/* Search */}
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Search prints..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+      <Input
+        placeholder="Search prints..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        icon={
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        }
+        iconPosition="left"
+      />
 
       {/* Category Filter */}
       {categories.length > 1 && (
-        <div className="mb-4">
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                  selectedCategory === category
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {category.charAt(0).toUpperCase() + category.slice(1)}
-              </button>
-            ))}
-          </div>
+        <div className="flex flex-wrap gap-2">
+          {categories.map((category) => {
+            const isActive = selectedCategory === category;
+            return (
+              <HoverScale key={category} scale={1.05}>
+                <button
+                  onClick={() => setSelectedCategory(category)}
+                  className={`
+                    px-3 py-1.5 rounded-medium text-tiny font-medium transition-smooth
+                    ${
+                      isActive
+                        ? 'bg-accent-blue text-white shadow-elevation-1'
+                        : 'bg-base-light-gray text-text-secondary hover:bg-base-cool-gray hover:text-text-primary'
+                    }
+                  `}
+                >
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                </button>
+              </HoverScale>
+            );
+          })}
         </div>
       )}
 
       {/* Print Grid */}
       {filteredEntries.length === 0 ? (
-        <div className="p-8 text-center">
-          <p className="text-sm text-gray-500">
-            {searchQuery || selectedCategory !== 'all'
-              ? 'No prints found matching your search.'
-              : 'No prints saved yet. Save prints from the Print Manager to build your library.'}
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          {filteredEntries.map((entry) => (
-            <div
-              key={entry.id}
-              className="p-3 rounded-lg border-2 border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm transition-all cursor-pointer group"
-              onClick={() => handleSelect(entry)}
+        <Card variant="standard">
+          <div className="p-8 text-center">
+            <svg
+              className="w-12 h-12 mx-auto text-text-tertiary mb-3"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              {/* Thumbnail */}
-              <div className="w-full aspect-square mb-2 rounded bg-gray-100 flex items-center justify-center overflow-hidden">
-                {entry.thumbnailUrl ? (
-                  <img
-                    src={entry.thumbnailUrl}
-                    alt={entry.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                    }}
-                  />
-                ) : entry.printData.textContent ? (
-                  <div
-                    className="text-center p-2"
-                    style={{
-                      fontFamily: entry.printData.textStyle?.fontFamily || 'Arial',
-                      fontSize: `${(entry.printData.textStyle?.fontSize || 24) * 0.5}px`,
-                      fontWeight: entry.printData.textStyle?.fontWeight || 'normal',
-                      color: entry.printData.textStyle?.color || '#000000',
-                    }}
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <p className="text-small text-text-secondary mb-1">
+              {searchQuery || selectedCategory !== 'all'
+                ? 'No prints found matching your search'
+                : 'No prints saved yet'}
+            </p>
+            <p className="text-tiny text-text-tertiary">
+              {searchQuery || selectedCategory !== 'all'
+                ? 'Try adjusting your search or filters'
+                : 'Save prints from the Print Manager to build your library'}
+            </p>
+          </div>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-2 gap-3 max-h-96 overflow-y-auto">
+          <AnimatePresence>
+            {filteredEntries.map((entry, index) => (
+              <MotionDiv
+                key={entry.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ delay: index * 0.05, duration: 0.3 }}
+              >
+                <HoverScale scale={1.05}>
+                  <Card
+                    variant="standard"
+                    hover
+                    className="cursor-pointer relative group"
+                    onClick={() => handleSelect(entry)}
                   >
-                    {entry.printData.textContent}
-                  </div>
-                ) : (
-                  <div className="text-gray-400 text-xs">No preview</div>
-                )}
-              </div>
+                    {/* Thumbnail */}
+                    <div className="w-full aspect-square mb-3 rounded-medium bg-base-light-gray flex items-center justify-center overflow-hidden border-2 border-base-light-gray">
+                      {entry.thumbnailUrl ? (
+                        <img
+                          src={entry.thumbnailUrl}
+                          alt={entry.name}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      ) : entry.printData.textContent ? (
+                        <div
+                          className="text-center p-2 w-full h-full flex items-center justify-center"
+                          style={{
+                            fontFamily: entry.printData.textStyle?.fontFamily || 'Arial',
+                            fontSize: `${Math.min((entry.printData.textStyle?.fontSize || 24) * 0.4, 16)}px`,
+                            fontWeight: entry.printData.textStyle?.fontWeight || 'normal',
+                            color: entry.printData.textStyle?.color || '#000000',
+                          }}
+                        >
+                          {entry.printData.textContent}
+                        </div>
+                      ) : (
+                        <div className="text-text-tertiary text-tiny">No preview</div>
+                      )}
+                    </div>
 
-              {/* Info */}
-              <div className="text-left">
-                <h4 className="font-medium text-sm text-gray-900 truncate">{entry.name}</h4>
-                {entry.category && (
-                  <p className="text-xs text-gray-500 mt-1">{entry.category}</p>
-                )}
-                {entry.printData.textContent && (
-                  <p className="text-xs text-gray-400 mt-1 truncate">
-                    "{entry.printData.textContent}"
-                  </p>
-                )}
-              </div>
+                    {/* Info */}
+                    <div className="space-y-1">
+                      <h4 className="text-small font-medium text-text-primary truncate">
+                        {entry.name}
+                      </h4>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {entry.category && (
+                          <Badge variant="neutral" size="sm">
+                            {entry.category}
+                          </Badge>
+                        )}
+                        {entry.printData.textContent && (
+                          <Badge variant="info" size="sm">
+                            Text
+                          </Badge>
+                        )}
+                      </div>
+                      {entry.printData.textContent && (
+                        <p className="text-tiny text-text-tertiary truncate">
+                          "{entry.printData.textContent}"
+                        </p>
+                      )}
+                    </div>
 
-              {/* Actions */}
-              <div className="mt-2 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(entry.id);
-                  }}
-                  className="text-red-500 hover:text-red-700 text-xs px-2 py-1"
-                  title="Delete from library"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
+                    {/* Delete Button */}
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <HoverScale scale={1.1}>
+                        <button
+                          onClick={(e) => handleDelete(entry.id, e)}
+                          className="p-1.5 bg-error text-white rounded-medium shadow-elevation-2 hover:bg-error/90 transition-smooth"
+                          title="Delete from library"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </HoverScale>
+                    </div>
+                  </Card>
+                </HoverScale>
+              </MotionDiv>
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
+
+      {/* Results Count */}
+      {filteredEntries.length > 0 && (
+        <div className="flex items-center justify-between text-tiny text-text-tertiary">
+          <span>
+            Showing {filteredEntries.length} of {entries.length} prints
+          </span>
+          {selectedCategory !== 'all' && (
+            <Badge variant="info" size="sm">
+              {selectedCategory}
+            </Badge>
+          )}
         </div>
       )}
     </div>
   );
 }
-

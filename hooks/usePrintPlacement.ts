@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { PrintApplication } from '@/types/prints';
+import { PrintApplication, BlendMode } from '@/types/prints';
 import { PrintZone, clampPositionToZone, isPositionInZone } from '@/types/zones';
 import { ComponentType } from '@/types/models';
 import { logger } from '@/lib/logger';
@@ -88,6 +88,7 @@ export function usePrintPlacement({
         component: selectedComponent,
         width,
         height,
+        blendMode: BlendMode.NORMAL,
       };
 
       setCurrentPlacement(placement);

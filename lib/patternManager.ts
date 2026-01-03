@@ -40,7 +40,7 @@ class PatternManager {
         } else {
           // Use pattern as base texture
           material.map = patternTexture;
-          material.map.alphaTest = 0.1;
+          material.alphaTest = 0.1;
         }
 
         // Load normal map if available
@@ -108,7 +108,7 @@ class PatternManager {
   ): THREE.Texture {
     // Simplified blending - in a full implementation, you'd use a shader or canvas
     // For now, return the overlay texture with adjusted opacity
-    overlayTexture.alphaTest = 1 - intensity;
+    // Note: alphaTest is a material property, not texture property
     return overlayTexture;
   }
 

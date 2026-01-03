@@ -48,7 +48,11 @@ class PrintTextureManager {
 
     // Draw base texture if available
     if (baseTexture && baseTexture.image) {
-      await this.drawTextureToCanvas(ctx, baseTexture.image, 0, 0, this.textureSize, this.textureSize);
+      const image = baseTexture.image;
+      // Type guard to ensure image is HTMLImageElement or HTMLCanvasElement
+      if (image instanceof HTMLImageElement || image instanceof HTMLCanvasElement) {
+        await this.drawTextureToCanvas(ctx, image, 0, 0, this.textureSize, this.textureSize);
+      }
     } else {
       // Fill with white if no base texture
       ctx.fillStyle = '#ffffff';

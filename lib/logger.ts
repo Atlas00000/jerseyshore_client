@@ -1,112 +1,213 @@
 /**
- * Client-side logger utility
+ * Enhanced Client-side Logger
+ * Comprehensive logging with multiple transports, performance tracking, and structured output
  */
 
-type LogLevel = 'debug' | 'info' | 'warn' | 'error';
-
-interface LogEntry {
-  timestamp: string;
-  level: LogLevel;
-  message: string;
-  context?: string;
-  error?: Error;
-  metadata?: Record<string, any>;
-}
+import { getLoggingConfig, shouldLog, type LogLevel } from './logging/config';
+import { ConsoleTransport, LocalStorageTransport, RemoteTransport, type LogEntry } from './logging/transports';
+import { performanceTracker } from './logging/performance';
 
 class ClientLogger {
+  private config = getLoggingConfig();
+  private consoleTransport: ConsoleTransport;
+  private localStorageTransport: LocalStorageTransport;
+  private remoteTransport: RemoteTransport;
+  private sessionId: string;
+
+  constructor() {
+    this.consoleTransport = new ConsoleTransport(this.config.maxLogHistory);
+    this.localStorageTransport = new LocalStorageTransport(
+      'app_logs',
+      this.config.maxLogHistory
+    );
+    this.remoteTransport = new RemoteTransport(
+      process.env.NEXT_PUBLIC_LOG_ENDPOINT,
+      this.config.enableErrorReporting
+    );
+    this.sessionId = this.generateSessionId();
+  }
+
+  private generateSessionId(): string {
+    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
   private formatTimestamp(): string {
     return new Date().toISOString();
   }
 
-  private formatLog(entry: LogEntry): string {
-    const { timestamp, level, message, context, error, metadata } = entry;
-    
-    let log = `[${timestamp}] [${level.toUpperCase()}]`;
-    
-    if (context) {
-      log += ` [${context}]`;
+  private createLogEntry(
+    level: LogLevel,
+    message: string,
+    options?: {
+      context?: string;
+      error?: Error;
+      metadata?: Record<string, any>;
     }
-    
-    log += ` ${message}`;
-    
-    if (error) {
-      log += `\n  Error: ${error.message}`;
-      if (error.stack) {
-        log += `\n  Stack: ${error.stack}`;
-      }
-    }
-    
-    if (metadata && Object.keys(metadata).length > 0) {
-      log += `\n  Metadata: ${JSON.stringify(metadata, null, 2)}`;
-    }
-    
-    return log;
-  }
-
-  private log(level: LogLevel, message: string, options?: {
-    context?: string;
-    error?: Error;
-    metadata?: Record<string, any>;
-  }) {
-    const entry: LogEntry = {
+  ): LogEntry {
+    return {
       timestamp: this.formatTimestamp(),
       level,
       message,
-      ...options,
+      context: options?.context,
+      error: options?.error,
+      metadata: options?.metadata,
+      sessionId: this.sessionId,
     };
+  }
 
-    const formattedLog = this.formatLog(entry);
-
-    // Use appropriate console method with styling
-    const styles = {
-      debug: 'color: #00BCD4;',
-      info: 'color: #4CAF50;',
-      warn: 'color: #FF9800;',
-      error: 'color: #F44336; font-weight: bold;',
-    };
-
-    const style = styles[level] || '';
-    const consoleMethod = level === 'error' ? console.error : 
-                         level === 'warn' ? console.warn :
-                         level === 'debug' ? console.debug : console.log;
-
-    if (level === 'error') {
-      console.error(`%c${formattedLog}`, style);
-    } else if (level === 'warn') {
-      console.warn(`%c${formattedLog}`, style);
-    } else {
-      console.log(`%c${formattedLog}`, style);
+  private async log(
+    level: LogLevel,
+    message: string,
+    options?: {
+      context?: string;
+      error?: Error;
+      metadata?: Record<string, any>;
+    }
+  ): Promise<void> {
+    // Check if we should log this level
+    if (!shouldLog(level, this.config)) {
+      return;
     }
 
-    // In production, you might want to send errors to a logging service
-    if (level === 'error' && entry.error) {
-      // Could send to Sentry, LogRocket, etc.
-      if (process.env.NODE_ENV === 'production') {
-        // Example: Sentry.captureException(entry.error);
-      }
+    const entry = this.createLogEntry(level, message, options);
+
+    // Console transport (always enabled if configured)
+    if (this.config.enableConsole) {
+      this.consoleTransport.log(entry);
+    }
+
+    // LocalStorage transport (development only)
+    if (this.config.logToLocalStorage && this.localStorageTransport) {
+      this.localStorageTransport.log(entry);
+    }
+
+    // Remote transport (production errors only)
+    if (this.config.enableErrorReporting && this.remoteTransport) {
+      await this.remoteTransport.log(entry);
     }
   }
 
-  debug(message: string, options?: { context?: string; metadata?: Record<string, any> }) {
-    if (process.env.NODE_ENV === 'development') {
+  /**
+   * Debug level logging (development only)
+   */
+  debug(
+    message: string,
+    options?: { context?: string; metadata?: Record<string, any> }
+  ): void {
+    if (this.config.level === 'debug') {
       this.log('debug', message, options);
     }
   }
 
-  info(message: string, options?: { context?: string; metadata?: Record<string, any> }) {
+  /**
+   * Info level logging
+   */
+  info(
+    message: string,
+    options?: { context?: string; metadata?: Record<string, any> }
+  ): void {
     this.log('info', message, options);
   }
 
-  warn(message: string, options?: { context?: string; error?: Error; metadata?: Record<string, any> }) {
+  /**
+   * Warning level logging
+   */
+  warn(
+    message: string,
+    options?: { context?: string; error?: Error; metadata?: Record<string, any> }
+  ): void {
     this.log('warn', message, options);
   }
 
-  error(message: string, options?: { context?: string; error?: Error; metadata?: Record<string, any> }) {
+  /**
+   * Error level logging
+   */
+  error(
+    message: string,
+    options?: { context?: string; error?: Error; metadata?: Record<string, any> }
+  ): void {
     this.log('error', message, options);
+  }
+
+  /**
+   * Performance tracking helper
+   */
+  performance = {
+    start: (name: string, metadata?: Record<string, any>) => {
+      if (this.config.enablePerformanceTracking) {
+        performanceTracker.start(name, metadata);
+      }
+    },
+    end: (name: string, log: boolean = true) => {
+      if (this.config.enablePerformanceTracking) {
+        return performanceTracker.end(name, log);
+      }
+      return null;
+    },
+    measureAsync: <T>(
+      name: string,
+      fn: () => Promise<T>,
+      metadata?: Record<string, any>
+    ) => {
+      if (this.config.enablePerformanceTracking) {
+        return performanceTracker.measureAsync(name, fn, metadata);
+      }
+      return fn();
+    },
+    measureSync: <T>(
+      name: string,
+      fn: () => T,
+      metadata?: Record<string, any>
+    ) => {
+      if (this.config.enablePerformanceTracking) {
+        return performanceTracker.measureSync(name, fn, metadata);
+      }
+      return fn();
+    },
+    getSummary: () => {
+      if (this.config.enablePerformanceTracking) {
+        return performanceTracker.getSummary();
+      }
+      return {};
+    },
+  };
+
+  /**
+   * Get log history from console transport
+   */
+  getHistory(): LogEntry[] {
+    return this.consoleTransport.getHistory();
+  }
+
+  /**
+   * Get logs from localStorage
+   */
+  getStoredLogs(): LogEntry[] {
+    return this.localStorageTransport.getLogs();
+  }
+
+  /**
+   * Clear all logs
+   */
+  clearLogs(): void {
+    this.consoleTransport.clearHistory();
+    this.localStorageTransport.clearLogs();
+  }
+
+  /**
+   * Export logs as JSON
+   */
+  exportLogs(): string {
+    const logs = this.getHistory();
+    return JSON.stringify(logs, null, 2);
+  }
+
+  /**
+   * Get session ID
+   */
+  getSessionId(): string {
+    return this.sessionId;
   }
 }
 
 export const logger = new ClientLogger();
-
-
-

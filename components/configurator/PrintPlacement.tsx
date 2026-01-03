@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useConfiguratorStore } from '@/stores/configuratorStore';
 import { ComponentType } from '@/types/models';
-import { PrintZone, PrintApplication } from '@/types/prints';
-import { usePrintPlacement } from '@/hooks/usePrintPlacement';
+import { PrintZone, PrintApplication, BlendMode } from '@/types/prints';
 import { PrintUploader } from './PrintUploader';
 
 const ZONES: { value: PrintZone; label: string }[] = [
@@ -15,30 +14,44 @@ const ZONES: { value: PrintZone; label: string }[] = [
 ];
 
 export function PrintPlacement() {
-  const { selectedComponent, printMap, setPrint } = useConfiguratorStore();
+  const { selectedComponent, printMap, addPrint, updatePrint, removePrint, clearComponentPrints } = useConfiguratorStore();
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const currentPrint = selectedComponent ? printMap[selectedComponent] : null;
+  const currentPrints = selectedComponent ? (printMap[selectedComponent] || []) : [];
+  const currentPrint = currentPrints.length > 0 ? currentPrints[0] : null;
 
-  const {
-    position,
-    scale,
-    rotation,
-    zone,
-    setPosition,
-    setScale,
-    setRotation,
-    setZone,
-    reset,
-  } = usePrintPlacement(currentPrint);
+  const [position, setPosition] = useState({ x: 0.5, y: 0.5 });
+  const [scale, setScale] = useState(1.0);
+  const [rotation, setRotation] = useState(0);
+  const [zone, setZone] = useState<PrintZone>('front');
 
-  // Update image URL when print changes
+  const reset = () => {
+    setPosition({ x: 0.5, y: 0.5 });
+    setScale(1.0);
+    setRotation(0);
+    setZone('front');
+  };
+
+  // Update image URL and placement values when print changes
   useEffect(() => {
     if (currentPrint) {
       setImageUrl(currentPrint.customImageUrl || currentPrint.printId || null);
+      if (currentPrint.position) {
+        setPosition(currentPrint.position);
+      }
+      if (currentPrint.scale !== undefined) {
+        setScale(currentPrint.scale);
+      }
+      if (currentPrint.rotation !== undefined) {
+        setRotation(currentPrint.rotation);
+      }
+      if (currentPrint.zone) {
+        setZone(currentPrint.zone);
+      }
     } else {
       setImageUrl(null);
+      reset();
     }
   }, [currentPrint]);
 
@@ -47,14 +60,21 @@ export function PrintPlacement() {
     setError(null);
     if (selectedComponent) {
       const application: PrintApplication = {
+        id: currentPrint?.id || `print-${Date.now()}`,
         customImageUrl: url,
         position,
         scale,
         rotation,
         zone,
         opacity: 1,
+        blendMode: currentPrint?.blendMode || BlendMode.NORMAL,
+        component: selectedComponent,
       };
-      setPrint(selectedComponent, application);
+      if (currentPrint?.id) {
+        updatePrint(selectedComponent, currentPrint.id, application);
+      } else {
+        addPrint(selectedComponent, application);
+      }
     }
   };
 
@@ -69,20 +89,31 @@ export function PrintPlacement() {
     }
 
     const application: PrintApplication = {
+      id: currentPrint?.id || `print-${Date.now()}`,
       customImageUrl: imageUrl,
       position,
       scale,
       rotation,
       zone,
       opacity: 1,
+      blendMode: currentPrint?.blendMode || BlendMode.NORMAL,
+      component: selectedComponent,
     };
-    setPrint(selectedComponent, application);
+    if (currentPrint?.id) {
+      updatePrint(selectedComponent, currentPrint.id, application);
+    } else {
+      addPrint(selectedComponent, application);
+    }
     setError(null);
   };
 
   const handleRemove = () => {
     if (selectedComponent) {
-      setPrint(selectedComponent, null);
+      if (currentPrint?.id) {
+        removePrint(selectedComponent, currentPrint.id);
+      } else {
+        clearComponentPrints(selectedComponent);
+      }
       setImageUrl(null);
       reset();
     }

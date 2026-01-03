@@ -80,6 +80,9 @@ export function useComponentHighlight(
       });
     }
 
+    const outlineMaterial = outlineMaterialRef.current;
+    if (!outlineMaterial) return;
+
     // Apply highlight to each mesh
     meshes.forEach((mesh) => {
       // Store original material
@@ -89,7 +92,7 @@ export function useComponentHighlight(
 
       // Create outline effect using a slightly larger version of the mesh
       const outlineGeometry = mesh.geometry.clone();
-      const outlineMesh = new THREE.Mesh(outlineGeometry, outlineMaterialRef.current);
+      const outlineMesh = new THREE.Mesh(outlineGeometry, outlineMaterial);
       outlineMesh.scale.multiplyScalar(1.02); // Slightly larger for outline effect
       outlineMesh.position.copy(mesh.position);
       outlineMesh.rotation.copy(mesh.rotation);
